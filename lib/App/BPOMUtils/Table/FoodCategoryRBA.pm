@@ -8140,8 +8140,24 @@ _
     hooks => {
         before_return => sub {
             my %args = @_;
-            # XXX adjust other properties e.g. table.field_formats etc
-            $args{_func_res}[3]{'table.fields'} = ['status'];
+
+            if ($args{_func_args}{detail}) {
+                # format text in summary
+                for my $row (@{ $args{_func_res}[2] }) {
+                    next unless $row->{summary};
+                    for ($row->{summary}) {
+                        s/\.  /.\n\n/g;
+                        s/ \x{2022}/\n\n\x{2022}/g;
+                    }
+                }
+
+                # XXX adjust other properties e.g. table.field_formats etc
+                $args{_func_res}[3]{'table.fields'} = ['status'];
+
+                # since 'summary' field is usually long text, we prefer to show it using Text::ANSITable
+                $ENV{FORMAT_PRETTY_TABLE_BACKEND} //= 'Text::ANSITable';
+            }
+
             1;
         },
     },
