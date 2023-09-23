@@ -8155,7 +8155,10 @@ _
                 $args{_func_res}[3]{'table.fields'} = ['status'];
 
                 # since 'summary' field is usually long text, we prefer to show it using Text::ANSITable
-                $ENV{FORMAT_PRETTY_TABLE_BACKEND} //= 'Text::ANSITable';
+                require Module::Installed::Tiny;
+                if (Module::Installed::Tiny::module_installed('Text::ANSITable')) {
+                    $ENV{FORMAT_PRETTY_TABLE_BACKEND} //= 'Text::ANSITable';
+                }
             }
 
             1;
